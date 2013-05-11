@@ -1,0 +1,16 @@
+﻿# this script simply prints all system variables
+
+print all your system variables:
+print server=%server%
+print db=%db%
+print path_web=%path_web%
+print path_webconfig=%path_webconfig%
+print %connection_string_name%
+print connection_string=%connection_string% 
+
+[define]
+print db is:%db%
+print now changing connection string name
+connection_string_name=WiredContactDatabase
+print and db will be:'%db%'
+

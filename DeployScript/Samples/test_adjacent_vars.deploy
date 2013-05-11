@@ -1,0 +1,13 @@
+﻿
+
+[define]
+var_1 = i
+var_2 = t
+
+print %var_1%%var_2% is 100\% escaped to %
+
+# must print:
+# it is 100% escaped to %
+
+inside % insider=2
+print %inside \% insider% outside \%100 ok
