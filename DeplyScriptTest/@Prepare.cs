@@ -211,5 +211,13 @@ namespace DeplyScriptTest
 
             return webConfig;
         }
+
+        /// <summary>
+        /// Creates a script (usually to be included by other scripts) in the current path
+        /// </summary>
+        public static void Script(string fileName, string content)
+        {
+            File.WriteAllText(Path.Combine(Environment.CurrentDirectory, fileName), content);
+        }
     }
 }

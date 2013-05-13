@@ -52,6 +52,7 @@
   <ItemGroup>
     <Compile Include="DatabaseTest.cs" />
     <Compile Include="%40Prepare.cs" />
+    <Compile Include="RunnerTest.cs" />
     <Compile Include="WebConfigTest.cs" />
     <Compile Include="VariablesTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
