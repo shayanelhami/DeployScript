@@ -51,9 +51,16 @@
   </Choose>
   <ItemGroup>
     <Compile Include="DatabaseTest.cs" />
+    <Compile Include="%40Prepare.cs" />
     <Compile Include="WebConfigTest.cs" />
     <Compile Include="VariablesTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\DeployScript\DeployScript.csproj">
+      <Project>{ffd9bf06-4c22-4335-8e76-41611fd09ed3}</Project>
+      <Name>DeployScript</Name>
+    </ProjectReference>
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
