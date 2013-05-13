@@ -14,7 +14,7 @@
     {
         public VariableFormat()
         {
-            this.DisplayName = "Varible";
+            this.DisplayName = "Variable";
             this.ForegroundColor = Colors.Black;
             this.BackgroundColor= Colors.Azure;
         }

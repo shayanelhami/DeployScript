@@ -43,8 +43,8 @@ namespace DeployScript
         }
 
         /// <summary>
-        /// Changes the value of a varibale in bank or adds it.
-        /// In case of assigning an empty or null value to key, undefines it
+        /// Changes the value of a variable in bank or adds it.
+        /// In case of assigning an empty or null value to key, un-defines it
         /// </summary>
         public void Set(string key, string value)
         {
@@ -64,7 +64,7 @@ namespace DeployScript
         }
 
         /// <summary>
-        /// Removes the defination and the value of the variable.
+        /// Removes the definition and the value of the variable.
         /// In case of system variables it causes them to return to default and system define values
         /// </summary>
         public void Undefine(string key)
@@ -76,7 +76,7 @@ namespace DeployScript
         /// Uses for late evaluation of system variables.
         /// For example if a deploy script overrides connectionString in [define] section
         /// there will not be any need to evaluate it here (which may cause an error about 
-        /// not finding webconfig if we first try set system varibales) Also it boosts startup
+        /// not finding webconfig if we first try set system variables) Also it boosts startup
         /// of the application
         /// </summary>
         public string Get(string key)
@@ -89,7 +89,7 @@ namespace DeployScript
             {
                 // we always re-evaluate system variables
                 // it is possible for use to change a variable (for example %connection_string_name%)
-                // and expect other variables relted to it to change accordingly (like %db%)
+                // and expect other variables related to it to change accordingly (like %db%)
                 // so we don't store the value in Bank
                 return SystemVariableFinders[key]();
             }
@@ -107,7 +107,7 @@ namespace DeployScript
                     // we accept escape inside a variable name
                     .Replace("\\%", "%"));
             })
-                // we also accept escaped % outside of a varaible name
+                // we also accept escaped % outside of a variable name
                 .Replace("\\%", "%");
         }
 

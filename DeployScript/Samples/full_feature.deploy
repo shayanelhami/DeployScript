@@ -21,7 +21,7 @@ based_on_thers= %some_var%123
 escaped=%this is an escape 100\% this one %%two%
 
 connection_string = abc
-# this undefines a variable (for system  it means return to default)
+# this un-defines a variable (for system  it means return to default)
 connection_string = 
 
 
