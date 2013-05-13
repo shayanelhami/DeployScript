@@ -5,6 +5,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeployScript", "DeployScrip
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeployScriptVisualStudioTools", "DeployScriptVisualStudioTools\DeployScriptVisualStudioTools.csproj", "{88A365AA-6255-46FD-AC68-828DA11D27FF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeplyScriptTest", "DeplyScriptTest\DeplyScriptTest.csproj", "{36B4529D-5676-4BF4-9BC0-5DBDFC25B494}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -19,6 +21,10 @@ Global
 		{88A365AA-6255-46FD-AC68-828DA11D27FF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{88A365AA-6255-46FD-AC68-828DA11D27FF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{88A365AA-6255-46FD-AC68-828DA11D27FF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{36B4529D-5676-4BF4-9BC0-5DBDFC25B494}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{36B4529D-5676-4BF4-9BC0-5DBDFC25B494}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{36B4529D-5676-4BF4-9BC0-5DBDFC25B494}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{36B4529D-5676-4BF4-9BC0-5DBDFC25B494}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
