@@ -20,6 +20,7 @@ A deploy script looks like an .ini file:
 # %path_web% full path to Website folder
 # %path_webconfig%
 # %connection_string%
+# %connection_string_name%
 #
 # deploy_script.exe reads a file named start.deploy and runs its contents
 # then based on the server name runs machine specific file (%server%.deploy ,if exists)
@@ -50,7 +51,7 @@ Users[created>='2012-1-2'].Password = null
 # if filter is on "Name" column you can omit name= part
 Settings['current'].WebsiteName = '%server%'
 
-Clients[id=’g-u-i-d’].Something = 10
+Clients[id='g-u-i-d'].Something = 10
 
 # this runs a whole sql file which is inside the current path
 Exec sql_file_name.sql
@@ -64,6 +65,4 @@ print data base is %db%
 ftp.server = 10.0.0.1
 ftp.user = john
 something = 'a=%db%' this is \%escaped\%
-x[a] = b
-x[a=b] = c
 ```
