@@ -217,6 +217,8 @@
             var key = match.Groups["key"].Value.Trim();
             var value = match.Groups["value"].Value.Trim();
 
+            if (DemoMode) return;
+
             WebConfigManager.UpdateSetting(Variables, key, value);
         }
 
@@ -230,6 +232,8 @@
             var match = DatabaseCommandDefinination.Match(input);
             if (match.Success)
             {
+                if (DemoMode) return;
+
                 databaseManager.ExecUpdateCommand(
                     match.Groups["table"].Value,
                     match.Groups["filter"].Value,
@@ -241,6 +245,8 @@
             match = ExecCommandDefinination.Match(input);
             if (match.Success)
             {
+                if (DemoMode) return;
+
                 databaseManager.ExecDatabaseScriptFile(match.Groups["filename"].Value);
                 return;
             }
