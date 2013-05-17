@@ -47,15 +47,15 @@ namespace DeplyScriptTest
             variables.Set(Variables.CONNECTION_STRING, DatabaseUtil.ConnectionString);
             var runner = new Runner(variables);
 
-            runner.ExecScript("DummyFileName", "[database]\nCustomers[id=='11111111-0000-0000-0000-000000000000'].Age = NULL");
+            runner.ExecScript("DummyFileName", "[database]\nCustomers[id='11111111-0000-0000-0000-000000000000'].Age = NULL");
 
-            var johnSmithAge = DatabaseUtil.Execute<int?>("SELECT TOP 1 age FROM Customers WHERE name ='John Smith'");
+            var johnSmithAge = DatabaseUtil.Execute<object>("SELECT TOP 1 age FROM Customers WHERE name ='John Smith'");
 
-            Assert.IsNull(johnSmithAge); 
+            Assert.IsTrue(Convert.IsDBNull(johnSmithAge));
         }
 
         [TestMethod]
-        public void Signless_filter()
+        public void Operatorless_filter()
         {
             Prepare.Database();
             var variables = new Variables();

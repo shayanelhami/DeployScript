@@ -233,6 +233,8 @@ namespace DeplyScriptTest
             DatabaseUtil.Execute("INSERT INTO Customers(Id, Name, Age) VALUES ('22222222-0000-0000-0000-000000000000','John Doe', 18)");
             DatabaseUtil.Execute("INSERT INTO Customers(Id, Name, Age) VALUES ('33333333-0000-0000-0000-000000000000','Laura Lindberg', 79)");
             DatabaseUtil.Execute("INSERT INTO Customers(Id, Name, Age) VALUES ('44444444-0000-0000-0000-000000000000','Daniel Eriksson', 21)");
+
+            DeployScript.DatabaseManager.ExecuteSqlOverride = DatabaseUtil.ExecuteInSqlCe;
         }
 
         private static void CreateDatabase()

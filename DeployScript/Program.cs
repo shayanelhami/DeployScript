@@ -19,9 +19,10 @@ namespace DeployScript
                 if (args.Length == 0)
                 {
                     // if no command line argument, execute:
-                    // start.deploy
+                    // _start.deploy
                     // %server%.deploy 
                     // others.deploy (if above not found)
+                    // _finish.deploy
                 } else
                 {
                     // TODO: check for current directory

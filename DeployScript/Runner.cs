@@ -61,13 +61,13 @@
         /// Executes a script from file
         /// </summary>
         public void ExecScript(string scriptPath)
-        {           
+        {
             using (var reader = File.OpenText(scriptPath))
             {
                 ExecScript(scriptPath, reader);
             }
         }
-      
+
         /// <summary>
         /// Executes a script from Stream.
         /// </summary>
@@ -93,7 +93,8 @@
                         try
                         {
                             line = Variables.ReplaceVariables(line);
-                        } catch (Exception err)
+                        }
+                        catch (Exception err)
                         {
                             // if variable is not found there is a change to report the line number here
                             throw new ScriptException(ScriptName, CurrentLine, err.Message);
@@ -219,9 +220,33 @@
             WebConfigManager.UpdateSetting(Variables, key, value);
         }
 
+        Regex DatabaseCommandDefinination = new Regex(@"^\s*(?<table>[^[]+)\[(?<filter>[^\]]+)\]\.(?<field>[^=]+)\s*=\s*(?<value>.+)", RegexOptions.Compiled);
+        Regex ExecCommandDefinination = new Regex(@"^\s*Exec\s*(?<filename>.+)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+
         private void ExecDatabaseCommand(string input)
         {
-            throw new NotImplementedException();
+            var databaseManager = new DatabaseManager(Variables);
+
+            var match = DatabaseCommandDefinination.Match(input);
+            if (match.Success)
+            {
+                databaseManager.ExecUpdateCommand(
+                    match.Groups["table"].Value,
+                    match.Groups["filter"].Value,
+                    match.Groups["field"].Value,
+                    match.Groups["value"].Value);
+                return;
+            }
+
+            match = ExecCommandDefinination.Match(input);
+            if (match.Success)
+            {
+                databaseManager.ExecDatabaseScriptFile(match.Groups["filename"].Value);
+                return;
+            }
+
+            throw new ScriptException(ScriptName, CurrentLine, "Unknown database format:" + input);
         }
+       
     }
 }

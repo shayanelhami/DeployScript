@@ -60,5 +60,18 @@ namespace DeplyScriptTest
 
             return result;
         }
+
+        /// <summary>
+        /// This method provides SqlCe override for DatabaseManager.ExecuteSql to make it testable by SqlCe
+        /// </summary>
+        public static void ExecuteInSqlCe(string connectionString, string cmdText)
+        {
+            using (var conn = new SqlCeConnection(connectionString))
+            {
+                conn.Open();
+                var cmd = new SqlCeCommand(cmdText, conn);
+                cmd.ExecuteNonQuery();
+            }
+        }
     }
 }
