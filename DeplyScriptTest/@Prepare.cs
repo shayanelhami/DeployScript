@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.SqlServerCe;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -218,6 +219,41 @@ namespace DeplyScriptTest
         public static void Script(string fileName, string content)
         {
             File.WriteAllText(Path.Combine(Environment.CurrentDirectory, fileName), content);
+        }
+
+        /// <summary>
+        /// Creates a database and fills it with test data
+        /// </summary>
+        public static void Database()
+        {
+            CreateDatabase();
+
+            DatabaseUtil.Execute("CREATE TABLE Customers (Id uniqueidentifier NOT NULL, Name nvarchar(50) NOT NULL, Age int NULL)");
+            DatabaseUtil.Execute("INSERT INTO Customers(Id, Name, Age) VALUES ('11111111-0000-0000-0000-000000000000','John Smith', 35)");
+            DatabaseUtil.Execute("INSERT INTO Customers(Id, Name, Age) VALUES ('22222222-0000-0000-0000-000000000000','John Doe', 18)");
+            DatabaseUtil.Execute("INSERT INTO Customers(Id, Name, Age) VALUES ('33333333-0000-0000-0000-000000000000','Laura Lindberg', 79)");
+            DatabaseUtil.Execute("INSERT INTO Customers(Id, Name, Age) VALUES ('44444444-0000-0000-0000-000000000000','Daniel Eriksson', 21)");
+        }
+
+        private static void CreateDatabase()
+        {
+            // prepare the folder
+            if (!Directory.Exists(DatabaseUtil.DatabasePath))
+            {
+                Directory.CreateDirectory(DatabaseUtil.DatabasePath);
+            }
+
+            // clear existing database
+            if (File.Exists(DatabaseUtil.DatabaseFile))
+            {
+                File.Delete(DatabaseUtil.DatabaseFile);
+            }
+
+            // and really create the file
+            using (var engine = new SqlCeEngine(DatabaseUtil.ConnectionString))
+            {
+                engine.CreateDatabase();
+            }
         }
     }
 }
