@@ -31,7 +31,7 @@
                 n.Attribute("key").Value);
         }
 
-        public static void UpdateSetting(Variables variables, string key, string value)
+        public static void UpdateSetting(Variables variables, string key, string value, bool quietMode = false)
         {
             var doc = XDocument.Load(variables.Get(Variables.PATH_WEBCONFIG));
             var nodes = doc.XPathSelectElements(String.Format("/configuration/appSettings/add[@key='{0}']", key));
@@ -40,6 +40,7 @@
 
             foreach (var node in nodes)
             {
+                if (!quietMode) Console.WriteLine(" Set {0} to {1}", key, value);
                 node.Attribute("value").Value = value;
             }
 

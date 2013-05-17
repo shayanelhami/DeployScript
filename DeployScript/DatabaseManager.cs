@@ -11,16 +11,19 @@
     public class DatabaseManager
     {
         Variables Variables;
+        bool QuietMode;
         public delegate void ExecuteSqlHandler(string connectionString, string cmdText);
         public static ExecuteSqlHandler ExecuteSqlOverride = null;
 
-        public DatabaseManager(Variables variables)
+        public DatabaseManager(Variables variables, bool quietMode)
         {
             Variables = variables;
+            QuietMode = quietMode;
         }
 
         public void ExecDatabaseScriptFile(string fileName)
         {
+            if (!QuietMode) Console.WriteLine(" Executing " + fileName);
             ExecuteSql(Variables.Get(Variables.CONNECTION_STRING), File.ReadAllText(fileName));
         }
 
@@ -32,12 +35,13 @@
                 filter = "Name=" + filter;
             }
 
-            var cmdText = String.Format("UPDATE {0} SET {1}={2} WHERE {3};",
+            var cmdText = String.Format(" UPDATE {0} SET {1}={2} WHERE {3};",
                 Quote(table),
                 Quote(field),
                 value,
                 filter);
 
+            if (!QuietMode) Console.WriteLine(cmdText);
             ExecuteSql(Variables.Get(Variables.CONNECTION_STRING), cmdText);
         }
 

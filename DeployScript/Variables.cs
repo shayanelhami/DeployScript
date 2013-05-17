@@ -138,6 +138,10 @@ namespace DeployScript
             pathWeb = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, "..", "Website"));
             if (Directory.Exists(pathWeb))
                 return pathWeb;
+            
+            pathWeb = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, ".."));
+            if (Directory.Exists(pathWeb))
+                return pathWeb;
 
             throw new Exception("Cannot find path to Website folder");
         }

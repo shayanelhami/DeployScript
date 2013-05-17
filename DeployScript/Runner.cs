@@ -35,16 +35,22 @@
         public bool DemoMode { get; set; }
 
         /// <summary>
+        /// In quiet mode does not print any log on standard output
+        /// </summary>
+        public bool QuietMode { get; set; }
+
+        /// <summary>
         /// If anything other than null system runs until the given line number and stops there
         /// </summary>
         public int? RunToLine { get; set; }
 
-        public Runner(Variables variables, List<string> includedScripts = null, bool demoMode = false)
+        public Runner(Variables variables, List<string> includedScripts = null, bool demoMode = false, bool quietMode = false)
         {
             Variables = variables;
             IncludedScripts = includedScripts ?? new List<string>();
             DemoMode = demoMode;
             CurrentSection = Section.None;
+            QuietMode = quietMode;
         }
 
         /// <summary>
@@ -219,7 +225,7 @@
 
             if (DemoMode) return;
 
-            WebConfigManager.UpdateSetting(Variables, key, value);
+            WebConfigManager.UpdateSetting(Variables, key, value, QuietMode);
         }
 
         Regex DatabaseCommandDefinination = new Regex(@"^\s*(?<table>[^[]+)\[(?<filter>[^\]]+)\]\.(?<field>[^=]+)\s*=\s*(?<value>.+)", RegexOptions.Compiled);
@@ -227,7 +233,7 @@
 
         private void ExecDatabaseCommand(string input)
         {
-            var databaseManager = new DatabaseManager(Variables);
+            var databaseManager = new DatabaseManager(Variables, QuietMode);
 
             var match = DatabaseCommandDefinination.Match(input);
             if (match.Success)
