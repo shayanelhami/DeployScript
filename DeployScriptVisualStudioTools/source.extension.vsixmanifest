@@ -1,9 +1,11 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
   <Metadata>
-    <Identity Id="DeployScriptVisualStudioTools..71b907b0-96c3-48db-b852-56b09c704d42" Version="1.0" Language="en-US" Publisher="Some company ltd." />
-    <DisplayName>DeployScriptVisualStudioTools</DisplayName>
-    <Description xml:space="preserve">Deploy Script Visual Studio tools</Description>
+    <Identity Id="DeployScriptVisualStudioTools..71b907b0-96c3-48db-b852-56b09c704d42" Version="1.0" Language="en-US" Publisher="Shayan" />
+    <DisplayName>Deploy Script Visual Studio Tools</DisplayName>
+    <Description xml:space="preserve">Visual Studio tools for deploy script. Adds syntax highlighting and outlining to .deploy files.</Description>
+    <MoreInfo>https://github.com/shayanelhami/DeployScript</MoreInfo>
+    <License>EULA.txt</License>
   </Metadata>
   <Installation>
     <InstallationTarget Id="Microsoft.VisualStudio.Pro" Version="11.0" />
