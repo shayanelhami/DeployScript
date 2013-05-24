@@ -123,6 +123,8 @@
             if (!File.Exists(scriptPath))
                 throw new ScriptException(ScriptName, CurrentLine, "Cannot find script file:" + scriptPath);
 
+            if (!QuietMode) Console.WriteLine(" Include:" + scriptPath);
+
             new Runner(Variables, IncludedScripts, DemoMode).ExecScript(scriptPath);
         }
 
@@ -259,6 +261,6 @@
 
             throw new ScriptException(ScriptName, CurrentLine, "Unknown database format:" + input);
         }
-       
+
     }
 }

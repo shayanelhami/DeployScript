@@ -118,7 +118,7 @@ deploy_script [-q] [-h] [-v] [script files]
         {
             if (!File.Exists(script))
             {
-                if (!Arguments.Quiet) Console.WriteLine("Not found:" + script);
+                if (!Arguments.Quiet) Console.WriteLine(script + " (not found)");
                 return false;
             }
 
