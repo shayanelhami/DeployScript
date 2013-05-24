@@ -13,7 +13,7 @@
         Variables Variables;
         bool QuietMode;
         public delegate void ExecuteSqlHandler(string connectionString, string cmdText);
-        public static ExecuteSqlHandler ExecuteSqlOverride = null;
+        public static ExecuteSqlHandler ExecuteSqlOverride = DatabaseManager.ExecuteInSqlServer;
 
         public DatabaseManager(Variables variables, bool quietMode)
         {
@@ -47,10 +47,19 @@
 
         private void ExecuteSql(string connectionString, string cmdText)
         {
-            if (ExecuteSqlOverride != null)
+            ExecuteSqlOverride(connectionString, cmdText);
+        }
+
+        /// <summary>
+        /// This method provides SQL Server override for DatabaseManager.ExecuteSql. Other components (like test project) can override it.
+        /// </summary>
+        private static void ExecuteInSqlServer(string connectionString, string cmdText)
+        {
+            using (var conn = new System.Data.SqlClient.SqlConnection(connectionString))
             {
-                ExecuteSqlOverride(connectionString, cmdText);
-                return;
+                conn.Open();
+                var cmd = new System.Data.SqlClient.SqlCommand(cmdText, conn);
+                cmd.ExecuteNonQuery();
             }
         }
 
