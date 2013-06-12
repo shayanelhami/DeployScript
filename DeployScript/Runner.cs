@@ -4,6 +4,7 @@
     using System.Collections.Generic;
     using System.IO;
     using System.Linq;
+    using System.Net.Configuration;
     using System.Text;
     using System.Text.RegularExpressions;
     using System.Threading.Tasks;
@@ -13,7 +14,8 @@
         None,
         Settings,
         Database,
-        Define
+        Define,
+        Smtp
     }
 
     public class Runner
@@ -99,8 +101,7 @@
                         try
                         {
                             line = Variables.ReplaceVariables(line);
-                        }
-                        catch (Exception err)
+                        } catch (Exception err)
                         {
                             // if variable is not found there is a change to report the line number here
                             throw new ScriptException(ScriptName, CurrentLine, err.Message);
@@ -148,6 +149,8 @@
             ExecuteInSection(input);
         }
 
+        // TODO: move each section to a section handler (a separate file)
+
         private void ExecuteInSection(string input)
         {
             switch (CurrentSection)
@@ -160,6 +163,9 @@
                     break;
                 case Section.Define:
                     ExecDefineCommand(input);
+                    break;
+                case Section.Smtp:
+                    ExecSmtpCommand(input);
                     break;
                 default:
                     throw new ScriptException(ScriptName, CurrentLine, "Command outside of all sections:" + input);
@@ -195,6 +201,7 @@
             if (line == "[define]") return Section.Define;
             if (line == "[settings]") return Section.Settings;
             if (line == "[database]") return Section.Database;
+            if (line == "[smtp]") return Section.Smtp;
 
             if (line.StartsWith("["))
                 throw new ScriptException(ScriptName, CurrentLine, "Unknown section:" + line);
@@ -214,6 +221,30 @@
             var value = match.Groups["value"].Value.Trim();
 
             Variables.Set(key, value);
+        }
+
+        private void ExecSmtpCommand(string input)
+        {
+            var match = KeyValueDefinination.Match(input);
+            if (!match.Success)
+                throw new ScriptException(ScriptName, CurrentLine, "Unknown smtp format:" + input);
+
+            var key = match.Groups["key"].Value.Trim();
+            var value = match.Groups["value"].Value.Trim();
+
+            // decide whether item belongs to Smtp node or Network node
+
+            var isInNetworkSection = typeof(SmtpNetworkElement).ContainsConfigurationProperty(key);
+
+            WebConfigManager.UpdateNodeAttribute(
+                Variables,
+                nodePath: isInNetworkSection ?
+                    "/configuration/system.net/mailSettings/smtp/network" :
+                    "/configuration/system.net/mailSettings/smtp",
+                nodeDisplayName: isInNetworkSection ? "smtp/network" : "smtp",
+                attributeName: key,
+                value: value,
+                quietMode: QuietMode);
         }
 
         private void ExceSettingsCommand(string input)

@@ -31,17 +31,44 @@
                 n.Attribute("key").Value);
         }
 
-        public static void UpdateSetting(Variables variables, string key, string value, bool quietMode = false)
+        public static void UpdateSetting(
+            Variables variables,
+            string key,
+            string value,
+            bool quietMode = false)
+        {
+            UpdateNodeAttribute(
+                variables,
+                nodePath: String.Format("/configuration/appSettings/add[@key='{0}']", key),
+                // Setting nodeDisplayName in this way allows 
+                // an error message like 'Cannot find setting Email.Ssl'
+                // or info like 'Set setting Email.Ssl value to true'
+                nodeDisplayName: "setting " + key,
+                attributeName: "value",
+                value: value,
+                quietMode: quietMode);
+        }
+
+        /// <summary>
+        /// Updates value of an attribute in the given node (by xpath) or creates the attribute
+        /// </summary>
+        public static void UpdateNodeAttribute(
+            Variables variables,
+            string nodePath,
+            string nodeDisplayName,
+            string attributeName,
+            string value,
+            bool quietMode = false)
         {
             var doc = XDocument.Load(variables.Get(Variables.PATH_WEBCONFIG));
-            var nodes = doc.XPathSelectElements(String.Format("/configuration/appSettings/add[@key='{0}']", key));
+            var nodes = doc.XPathSelectElements(nodePath);
             if (nodes.Count() == 0)
-                throw new Exception("Cannot find any settings with key " + key);
+                throw new Exception(String.Format("Cannot find {0}", nodeDisplayName));
 
             foreach (var node in nodes)
             {
-                if (!quietMode) Console.WriteLine(" Set {0} to {1}", key, value);
-                node.Attribute("value").Value = value;
+                if (!quietMode) Console.WriteLine(" Set {0} {1} to {2}", nodeDisplayName, attributeName, value);
+                node.SetAttributeValue(attributeName, value);
             }
 
             doc.Save(variables.Get(Variables.PATH_WEBCONFIG));

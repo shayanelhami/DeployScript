@@ -55,6 +55,7 @@
   </Choose>
   <ItemGroup>
     <Compile Include="%40DatabaseUtil.cs" />
+    <Compile Include="SmtpTest.cs" />
     <Compile Include="DatabaseTest.cs" />
     <Compile Include="%40Prepare.cs" />
     <Compile Include="RunnerTest.cs" />
