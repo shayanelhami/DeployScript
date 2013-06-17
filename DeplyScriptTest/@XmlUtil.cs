@@ -49,7 +49,7 @@ namespace DeplyScriptTest
         /// <summary>
         /// Returns value of the given attribute in the given node (xpath) or null if node or attribute does no exist
         /// </summary>
-        private static string ReadAttribute(string xmlFilePath, string nodepath, string attributeName)
+        public static string ReadAttribute(string xmlFilePath, string nodepath, string attributeName)
         {
             var doc = XDocument.Load(xmlFilePath);
             var node = doc.XPathSelectElements(nodepath).FirstOrDefault();

@@ -5,7 +5,7 @@ using DeployScript;
 namespace DeplyScriptTest
 {
     [TestClass]
-    public class WebConfigTest
+    public class SettingTest
     {
         [TestMethod]
         public void Change_setting()

@@ -15,7 +15,8 @@
         Settings,
         Database,
         Define,
-        Smtp
+        Smtp,
+        Compilation
     }
 
     public class Runner
@@ -101,7 +102,8 @@
                         try
                         {
                             line = Variables.ReplaceVariables(line);
-                        } catch (Exception err)
+                        }
+                        catch (Exception err)
                         {
                             // if variable is not found there is a change to report the line number here
                             throw new ScriptException(ScriptName, CurrentLine, err.Message);
@@ -155,18 +157,11 @@
         {
             switch (CurrentSection)
             {
-                case Section.Settings:
-                    ExceSettingsCommand(input);
-                    break;
-                case Section.Database:
-                    ExecDatabaseCommand(input);
-                    break;
-                case Section.Define:
-                    ExecDefineCommand(input);
-                    break;
-                case Section.Smtp:
-                    ExecSmtpCommand(input);
-                    break;
+                case Section.Settings: ExceSettingsCommand(input); break;
+                case Section.Database: ExecDatabaseCommand(input); break;
+                case Section.Define: ExecDefineCommand(input); break;
+                case Section.Smtp: ExecSmtpCommand(input); break;
+                case Section.Compilation: ExecCompilationCommand(input); break;
                 default:
                     throw new ScriptException(ScriptName, CurrentLine, "Command outside of all sections:" + input);
             }
@@ -202,6 +197,7 @@
             if (line == "[settings]") return Section.Settings;
             if (line == "[database]") return Section.Database;
             if (line == "[smtp]") return Section.Smtp;
+            if (line == "[compilation]") return Section.Compilation;
 
             if (line.StartsWith("["))
                 throw new ScriptException(ScriptName, CurrentLine, "Unknown section:" + line);
@@ -242,6 +238,28 @@
                     "/configuration/system.net/mailSettings/smtp/network" :
                     "/configuration/system.net/mailSettings/smtp",
                 nodeDisplayName: isInNetworkSection ? "smtp/network" : "smtp",
+                attributeName: key,
+                value: value,
+                quietMode: QuietMode);
+        }
+
+        private void ExecCompilationCommand(string input)
+        {
+            var match = KeyValueDefinination.Match(input);
+            if (!match.Success)
+                throw new ScriptException(ScriptName, CurrentLine, "Unknown compilation format:" + input);
+
+            var key = match.Groups["key"].Value.Trim();
+            var value = match.Groups["value"].Value.Trim();
+
+            var isValidCompilationAttribute = typeof(System.Web.Configuration.CompilationSection).ContainsConfigurationProperty(key);
+            if (!isValidCompilationAttribute)
+                throw new ScriptException(ScriptName, CurrentLine, "Invalid compilation section attribute:" + key);
+
+            WebConfigManager.UpdateNodeAttribute(
+                Variables,
+                nodePath: "/configuration/system.web/compilation",
+                nodeDisplayName: "compilation",
                 attributeName: key,
                 value: value,
                 quietMode: QuietMode);
