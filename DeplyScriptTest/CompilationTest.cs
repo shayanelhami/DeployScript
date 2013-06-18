@@ -8,7 +8,7 @@ namespace DeplyScriptTest
     public class CompilationTest
     {
         [TestMethod]
-        public void Change_setting()
+        public void Change_compilation_attribute()
         {
             var webConfig = Prepare.WebConfig();
             var runner = new Runner(new Variables());

@@ -60,7 +60,7 @@
     <Compile Include="DatabaseTest.cs" />
     <Compile Include="%40Prepare.cs" />
     <Compile Include="RunnerTest.cs" />
-    <Compile Include="SettingTest.cs" />
+    <Compile Include="SettingsTest.cs" />
     <Compile Include="VariablesTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="%40XmlUtil.cs" />

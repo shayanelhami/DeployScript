@@ -8,26 +8,17 @@
     using System.Text;
     using System.Text.RegularExpressions;
     using System.Threading.Tasks;
+    using DeployScript.Sections;
 
-    public enum Section
-    {
-        None,
-        Settings,
-        Database,
-        Define,
-        Smtp,
-        Compilation
-    }
-
-    public class Runner
+    public class Runner : IRunner
     {
         /// <summary>
         /// To prevent circular references full path to every included script (including the current one)
         /// will be put in this list
         /// </summary>
         List<string> IncludedScripts;
-        Variables Variables;
-        string ScriptName = null;
+        public Variables Variables { get; private set; }
+        public string ScriptName { get; private set; }
 
         public Section CurrentSection { get; private set; }
         public int CurrentLine { get; private set; }
@@ -52,7 +43,7 @@
             Variables = variables;
             IncludedScripts = includedScripts ?? new List<string>();
             DemoMode = demoMode;
-            CurrentSection = Section.None;
+            CurrentSection = null;
             QuietMode = quietMode;
         }
 
@@ -102,8 +93,7 @@
                         try
                         {
                             line = Variables.ReplaceVariables(line);
-                        }
-                        catch (Exception err)
+                        } catch (Exception err)
                         {
                             // if variable is not found there is a change to report the line number here
                             throw new ScriptException(ScriptName, CurrentLine, err.Message);
@@ -134,37 +124,26 @@
         const string IncludeCommand = "include ";
         const string PrintCommand = "print ";
 
-        private void ExecLine(string input)
+        private void ExecLine(string line)
         {
             // special commands
-            if (ExecuteSecialCommand(input))
+            if (ExecuteSecialCommand(line))
                 return;
 
             // sections
-            var section = FindSection(input);
-            if (section.HasValue)
+            if (line.StartsWith("["))
             {
-                CurrentSection = section.Value;
-                return;
+                CurrentSection = SectionFactory.FindSection(this, line);
+
+                if (CurrentSection == null)
+                    throw new ScriptException(ScriptName, CurrentLine, "Unknown section:" + line);
             }
-
-            ExecuteInSection(input);
-        }
-
-        // TODO: move each section to a section handler (a separate file)
-
-        private void ExecuteInSection(string input)
-        {
-            switch (CurrentSection)
+            else if (CurrentSection != null)
             {
-                case Section.Settings: ExceSettingsCommand(input); break;
-                case Section.Database: ExecDatabaseCommand(input); break;
-                case Section.Define: ExecDefineCommand(input); break;
-                case Section.Smtp: ExecSmtpCommand(input); break;
-                case Section.Compilation: ExecCompilationCommand(input); break;
-                default:
-                    throw new ScriptException(ScriptName, CurrentLine, "Command outside of all sections:" + input);
+                CurrentSection.Execute(line);
             }
+            else
+                throw new ScriptException(ScriptName, CurrentLine, "Command outside of all sections:" + line);
         }
 
         /// <summary>
@@ -188,128 +167,5 @@
 
             return false;
         }
-
-        private Section? FindSection(string input)
-        {
-            var line = input.ToLower();
-
-            if (line == "[define]") return Section.Define;
-            if (line == "[settings]") return Section.Settings;
-            if (line == "[database]") return Section.Database;
-            if (line == "[smtp]") return Section.Smtp;
-            if (line == "[compilation]") return Section.Compilation;
-
-            if (line.StartsWith("["))
-                throw new ScriptException(ScriptName, CurrentLine, "Unknown section:" + line);
-
-            return null;
-        }
-
-        Regex KeyValueDefinination = new Regex(@"^\s*(?<key>[^=]+)=\s*(?<value>.*)", RegexOptions.Compiled);
-
-        private void ExecDefineCommand(string input)
-        {
-            var match = KeyValueDefinination.Match(input);
-            if (!match.Success)
-                throw new ScriptException(ScriptName, CurrentLine, "Unknown variable definiation format:" + input);
-
-            var key = match.Groups["key"].Value.Trim();
-            var value = match.Groups["value"].Value.Trim();
-
-            Variables.Set(key, value);
-        }
-
-        private void ExecSmtpCommand(string input)
-        {
-            var match = KeyValueDefinination.Match(input);
-            if (!match.Success)
-                throw new ScriptException(ScriptName, CurrentLine, "Unknown smtp format:" + input);
-
-            var key = match.Groups["key"].Value.Trim();
-            var value = match.Groups["value"].Value.Trim();
-
-            // decide whether item belongs to Smtp node or Network node
-
-            var isInNetworkSection = typeof(SmtpNetworkElement).ContainsConfigurationProperty(key);
-
-            WebConfigManager.UpdateNodeAttribute(
-                Variables,
-                nodePath: isInNetworkSection ?
-                    "/configuration/system.net/mailSettings/smtp/network" :
-                    "/configuration/system.net/mailSettings/smtp",
-                nodeDisplayName: isInNetworkSection ? "smtp/network" : "smtp",
-                attributeName: key,
-                value: value,
-                quietMode: QuietMode);
-        }
-
-        private void ExecCompilationCommand(string input)
-        {
-            var match = KeyValueDefinination.Match(input);
-            if (!match.Success)
-                throw new ScriptException(ScriptName, CurrentLine, "Unknown compilation format:" + input);
-
-            var key = match.Groups["key"].Value.Trim();
-            var value = match.Groups["value"].Value.Trim();
-
-            var isValidCompilationAttribute = typeof(System.Web.Configuration.CompilationSection).ContainsConfigurationProperty(key);
-            if (!isValidCompilationAttribute)
-                throw new ScriptException(ScriptName, CurrentLine, "Invalid compilation section attribute:" + key);
-
-            WebConfigManager.UpdateNodeAttribute(
-                Variables,
-                nodePath: "/configuration/system.web/compilation",
-                nodeDisplayName: "compilation",
-                attributeName: key,
-                value: value,
-                quietMode: QuietMode);
-        }
-
-        private void ExceSettingsCommand(string input)
-        {
-            var match = KeyValueDefinination.Match(input);
-            if (!match.Success)
-                throw new ScriptException(ScriptName, CurrentLine, "Unknown setting format:" + input);
-
-            var key = match.Groups["key"].Value.Trim();
-            var value = match.Groups["value"].Value.Trim();
-
-            if (DemoMode) return;
-
-            WebConfigManager.UpdateSetting(Variables, key, value, QuietMode);
-        }
-
-        Regex DatabaseCommandDefinination = new Regex(@"^\s*(?<table>[^[]+)\[(?<filter>[^\]]+)\]\.(?<field>[^=]+)\s*=\s*(?<value>.+)", RegexOptions.Compiled);
-        Regex ExecCommandDefinination = new Regex(@"^\s*Exec\s*(?<filename>.+)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
-
-        private void ExecDatabaseCommand(string input)
-        {
-            var databaseManager = new DatabaseManager(Variables, QuietMode);
-
-            var match = DatabaseCommandDefinination.Match(input);
-            if (match.Success)
-            {
-                if (DemoMode) return;
-
-                databaseManager.ExecUpdateCommand(
-                    match.Groups["table"].Value,
-                    match.Groups["filter"].Value,
-                    match.Groups["field"].Value,
-                    match.Groups["value"].Value);
-                return;
-            }
-
-            match = ExecCommandDefinination.Match(input);
-            if (match.Success)
-            {
-                if (DemoMode) return;
-
-                databaseManager.ExecDatabaseScriptFile(match.Groups["filename"].Value);
-                return;
-            }
-
-            throw new ScriptException(ScriptName, CurrentLine, "Unknown database format:" + input);
-        }
-
     }
 }

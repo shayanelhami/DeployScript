@@ -30,7 +30,7 @@ some_var=value
             runner.ExecScript("DummyFileName", @"
 [define]
 some_var=value1
-%some_var=value2
+#some_var=value2
 
 ");
             Assert.AreEqual("value1", variables.Get("some_var"));
